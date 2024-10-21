@@ -8,12 +8,14 @@
 using namespace std;
 
 enum TokenType {
-    T_INT, T_FLOAT, T_DOUBLE, T_STRING, T_BOOL, T_CHAR,  // Added new data types
+    T_INT, T_FLOAT, T_DOUBLE, T_STRING, T_BOOL, T_CHAR,
     T_ID, T_NUM, T_IF, T_ELSE, T_RETURN, 
+    T_FOR, T_WHILE, T_SWITCH, T_CASE, T_DEFAULT, T_BREAK,
     T_ASSIGN, T_PLUS, T_MINUS, T_MUL, T_DIV, 
     T_LPAREN, T_RPAREN, T_LBRACE, T_RBRACE,  
-    T_SEMICOLON, T_GT, T_EOF, 
+    T_SEMICOLON, T_GT, T_EOF
 };
+
 
 struct Token {
     TokenType type;
@@ -50,14 +52,20 @@ public:
             if (isalpha(current)) {
                 string word = consumeWord();
                 if (word == "int") tokens.push_back(Token{T_INT, word});
-                else if (word == "float") tokens.push_back(Token{T_FLOAT, word}); // New data type
-                else if (word == "double") tokens.push_back(Token{T_DOUBLE, word}); // New data type
-                else if (word == "string") tokens.push_back(Token{T_STRING, word}); // New data type
-                else if (word == "bool") tokens.push_back(Token{T_BOOL, word}); // New data type
-                else if (word == "char") tokens.push_back(Token{T_CHAR, word}); // New data type
+                else if (word == "float") tokens.push_back(Token{T_FLOAT, word});
+                else if (word == "double") tokens.push_back(Token{T_DOUBLE, word});
+                else if (word == "string") tokens.push_back(Token{T_STRING, word});
+                else if (word == "bool") tokens.push_back(Token{T_BOOL, word});
+                else if (word == "char") tokens.push_back(Token{T_CHAR, word});
                 else if (word == "if") tokens.push_back(Token{T_IF, word});
                 else if (word == "else") tokens.push_back(Token{T_ELSE, word});
                 else if (word == "return") tokens.push_back(Token{T_RETURN, word});
+                else if (word == "for") tokens.push_back(Token{T_FOR, word});
+                else if (word == "while") tokens.push_back(Token{T_WHILE, word});
+                else if (word == "switch") tokens.push_back(Token{T_SWITCH, word});
+                else if (word == "case") tokens.push_back(Token{T_CASE, word});
+                else if (word == "default") tokens.push_back(Token{T_DEFAULT, word});
+                else if (word == "break") tokens.push_back(Token{T_BREAK, word});
                 else tokens.push_back(Token{T_ID, word});
                 continue;
             }
