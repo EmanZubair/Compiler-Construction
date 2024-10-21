@@ -1,9 +1,9 @@
-int x;
-x = 10;
-int y;
-y = x + 5;
-if (y > 10) {
-    return y;
-} else {
-    return 0;
+int a;
+float b;
+string name;
+b = 5.5;
+if (a > 10) {
+    return a;
+else {
+    return b; // Missing closing brace for if statement
 }

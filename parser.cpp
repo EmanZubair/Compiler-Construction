@@ -8,7 +8,8 @@
 using namespace std;
 
 enum TokenType {
-    T_INT, T_ID, T_NUM, T_IF, T_ELSE, T_RETURN, 
+    T_INT, T_FLOAT, T_DOUBLE, T_STRING, T_BOOL, T_CHAR,  // Added new data types
+    T_ID, T_NUM, T_IF, T_ELSE, T_RETURN, 
     T_ASSIGN, T_PLUS, T_MINUS, T_MUL, T_DIV, 
     T_LPAREN, T_RPAREN, T_LBRACE, T_RBRACE,  
     T_SEMICOLON, T_GT, T_EOF, 
@@ -49,6 +50,11 @@ public:
             if (isalpha(current)) {
                 string word = consumeWord();
                 if (word == "int") tokens.push_back(Token{T_INT, word});
+                else if (word == "float") tokens.push_back(Token{T_FLOAT, word}); // New data type
+                else if (word == "double") tokens.push_back(Token{T_DOUBLE, word}); // New data type
+                else if (word == "string") tokens.push_back(Token{T_STRING, word}); // New data type
+                else if (word == "bool") tokens.push_back(Token{T_BOOL, word}); // New data type
+                else if (word == "char") tokens.push_back(Token{T_CHAR, word}); // New data type
                 else if (word == "if") tokens.push_back(Token{T_IF, word});
                 else if (word == "else") tokens.push_back(Token{T_ELSE, word});
                 else if (word == "return") tokens.push_back(Token{T_RETURN, word});
@@ -108,7 +114,9 @@ private:
     size_t pos;
 
     void parseStatement() {
-        if (tokens[pos].type == T_INT) {
+        if (tokens[pos].type == T_INT || tokens[pos].type == T_FLOAT ||
+            tokens[pos].type == T_DOUBLE || tokens[pos].type == T_STRING ||
+            tokens[pos].type == T_BOOL || tokens[pos].type == T_CHAR) {
             parseDeclaration();
         } else if (tokens[pos].type == T_ID) {
             parseAssignment();
@@ -134,9 +142,13 @@ private:
     }
 
     void parseDeclaration() {
-        expect(T_INT);
-        expect(T_ID);
-        expect(T_SEMICOLON);
+        if (tokens[pos].type == T_INT || tokens[pos].type == T_FLOAT ||
+            tokens[pos].type == T_DOUBLE || tokens[pos].type == T_STRING ||
+            tokens[pos].type == T_BOOL || tokens[pos].type == T_CHAR) {
+            expect(tokens[pos].type);  // Expect the type
+            expect(T_ID);              // Expect an identifier
+            expect(T_SEMICOLON);       // Expect a semicolon
+        }
     }
 
     void parseAssignment() {
