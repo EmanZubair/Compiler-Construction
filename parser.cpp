@@ -9,13 +9,12 @@ using namespace std;
 
 enum TokenType {
     T_INT, T_FLOAT, T_DOUBLE, T_STRING, T_BOOL, T_CHAR,
-    T_ID, T_NUM, T_IF, T_ELSE, T_RETURN, 
+    T_ID, T_NUM, T_AGAR, T_ELSE, T_RETURN, 
     T_FOR, T_WHILE, T_SWITCH, T_CASE, T_DEFAULT, T_BREAK,
     T_ASSIGN, T_PLUS, T_MINUS, T_MUL, T_DIV, 
     T_LPAREN, T_RPAREN, T_LBRACE, T_RBRACE,  
     T_SEMICOLON, T_GT, T_EOF
 };
-
 
 struct Token {
     TokenType type;
@@ -57,7 +56,7 @@ public:
                 else if (word == "string") tokens.push_back(Token{T_STRING, word});
                 else if (word == "bool") tokens.push_back(Token{T_BOOL, word});
                 else if (word == "char") tokens.push_back(Token{T_CHAR, word});
-                else if (word == "if") tokens.push_back(Token{T_IF, word});
+                else if (word == "Agar") tokens.push_back(Token{T_AGAR, word});  // Changed from "if" to "Agar"
                 else if (word == "else") tokens.push_back(Token{T_ELSE, word});
                 else if (word == "return") tokens.push_back(Token{T_RETURN, word});
                 else if (word == "for") tokens.push_back(Token{T_FOR, word});
@@ -128,8 +127,8 @@ private:
             parseDeclaration();
         } else if (tokens[pos].type == T_ID) {
             parseAssignment();
-        } else if (tokens[pos].type == T_IF) {
-            parseIfStatement();
+        } else if (tokens[pos].type == T_AGAR) {  // Changed from T_IF to T_AGAR
+            parseAgarStatement();
         } else if (tokens[pos].type == T_RETURN) {
             parseReturnStatement();
         } else if (tokens[pos].type == T_LBRACE) {  
@@ -166,8 +165,8 @@ private:
         expect(T_SEMICOLON);
     }
 
-    void parseIfStatement() {
-        expect(T_IF);
+    void parseAgarStatement() {
+        expect(T_AGAR);
         expect(T_LPAREN);
         parseExpression();
         expect(T_RPAREN);
