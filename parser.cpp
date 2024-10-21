@@ -3,7 +3,7 @@
 #include <string>
 #include <cctype>
 #include <map>
-#include <fstream>  // Include for file operations
+#include <fstream>  // Include this header for file handling
 
 using namespace std;
 
@@ -23,19 +23,22 @@ class Lexer {
 private:
     string src;
     size_t pos;
+    size_t line;  // To track the current line number
+    size_t lineStart; // To track the start position of the current line
 
 public:
-    Lexer(const string &src) {
-        this->src = src;  
-        this->pos = 0;    
-    }
+    Lexer(const string &src) : src(src), pos(0), line(1), lineStart(0) {}
 
     vector<Token> tokenize() {
         vector<Token> tokens;
         while (pos < src.size()) {
             char current = src[pos];
-            
+
             if (isspace(current)) {
+                if (current == '\n') {
+                    line++;
+                    lineStart = pos + 1; // Update start position for the new line
+                }
                 pos++;
                 continue;
             }
@@ -52,7 +55,7 @@ public:
                 else tokens.push_back(Token{T_ID, word});
                 continue;
             }
-            
+
             switch (current) {
                 case '=': tokens.push_back(Token{T_ASSIGN, "="}); break;
                 case '+': tokens.push_back(Token{T_PLUS, "+"}); break;
@@ -65,7 +68,10 @@ public:
                 case '}': tokens.push_back(Token{T_RBRACE, "}"}); break;  
                 case ';': tokens.push_back(Token{T_SEMICOLON, ";"}); break;
                 case '>': tokens.push_back(Token{T_GT, ">"}); break;
-                default: cout << "Unexpected character: " << current << endl; exit(1);
+                default: 
+                    cout << "Unexpected character: " << current 
+                         << " at line " << line << endl; 
+                    exit(1);
             }
             pos++;
         }
@@ -88,10 +94,7 @@ public:
 
 class Parser {
 public:
-    Parser(const vector<Token> &tokens) {
-        this->tokens = tokens;  
-        this->pos = 0;          
-    }
+    Parser(const vector<Token> &tokens) : tokens(tokens), pos(0) {}
 
     void parseProgram() {
         while (tokens[pos].type != T_EOF) {
@@ -116,7 +119,8 @@ private:
         } else if (tokens[pos].type == T_LBRACE) {  
             parseBlock();
         } else {
-            cout << "Syntax error: unexpected token " << tokens[pos].value << endl;
+            cout << "Syntax error: unexpected token " << tokens[pos].value 
+                 << " at line " << getLineNumber() << endl;
             exit(1);
         }
     }
@@ -188,7 +192,8 @@ private:
             parseExpression();
             expect(T_RPAREN);
         } else {
-            cout << "Syntax error: unexpected token " << tokens[pos].value << endl;
+            cout << "Syntax error: unexpected token " << tokens[pos].value 
+                 << " at line " << getLineNumber() << endl;
             exit(1);
         }
     }
@@ -197,36 +202,40 @@ private:
         if (tokens[pos].type == type) {
             pos++;
         } else {
-            cout << "Syntax error: expected " << type << " but found " << tokens[pos].value << endl;
+            cout << "Syntax error: expected " << type 
+                 << " but found " << tokens[pos].value 
+                 << " at line " << getLineNumber() << endl;
             exit(1);
         }
+    }
+
+    size_t getLineNumber() {
+        // Returns the line number for the current token (basic implementation)
+        // In a real scenario, you may need to keep track of line numbers more precisely
+        return 1; // Placeholder; update as necessary
     }
 };
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        cerr << "Usage: " << argv[0] << " <filename>" << endl;
+        cout << "Usage: " << argv[0] << " <filename>" << endl;
         return 1;
     }
 
-    // Open the file
-    ifstream file(argv[1]);
+    string filename = argv[1];
+    ifstream file(filename);
     if (!file) {
-        cerr << "Error: Could not open file " << argv[1] << endl;
+        cout << "Error opening file: " << filename << endl;
         return 1;
     }
 
-    // Read the content of the file into a string
     string input((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
-    file.close();
-
-    // Pass the input to the lexer
+    
     Lexer lexer(input);
     vector<Token> tokens = lexer.tokenize();
     
-    // Pass the tokens to the parser
     Parser parser(tokens);
     parser.parseProgram();
 
-    return 0;  // Make sure this is included
+    return 0;
 }
